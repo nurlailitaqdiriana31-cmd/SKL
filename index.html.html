@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kelulusan Siswa - SDN 3 Kuala Pembuang I</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        :root {
+            --color-primary: #667eea;
+            --color-secondary: #764ba2;
+            --color-success: #28a745;
+            --color-danger: #dc3545;
+            --color-warning: #ffc107;
+            --color-info: #17a2b8;
+            --color-light: #f8f9fa;
+            --color-dark: #343a40;
+            --color-border: #dee2e6;
+        }
+
+        /* LOGIN SCREEN */
+        #loginScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-hint {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* ADMIN PANEL */
+        #adminPanel {
+            display: none;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .admin-header {
+            background: white;
+            border-bottom: 1px solid #ddd;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-header h1 {
+            font-size: 22px;
+            color: #333;
+            margin: 0;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: white;
+            color: var(--color-danger);
+            border: 1px solid var(--color-danger);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .admin-content {
+            padding: 30px 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            border: none;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+
+        .btn-add {
+            background: var(--color-success);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .siswa-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .siswa-info {
+            flex: 1;
+        }
+
+        .siswa-info p {
+            margin: 0;
+            color: #333;
+        }
+
+        .siswa-info .name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .siswa-info .nisn {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .status-lulus {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-belum {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-delete {
+            padding: 6px 12px;
+            background: var(--color-danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .siswa-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* SISWA PORTAL */
+        #siswaPortal {
+            display: none;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            padding: 40px 20px;
+        }
+
+        .portal-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .portal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .portal-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 0.6s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .portal-header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: var(--color-success);
+        }
+
+        .portal-info {
+            background: #f0f8f4;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--color-success);
+        }
+
+        .portal-info p {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .portal-info .label {
+            color: #666;
+            font-size: 13px;
+            font-weight: 400;
+            margin-bottom: 3px;
+        }
+
+        .portal-info .value {
+            color: var(--color-success);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-download {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--color-success) 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-download:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-download:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .belum-lulus {
+            text-align: center;
+        }
+
+        .belum-lulus h1 {
+            font-size: 32px;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .belum-lulus p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🔐 Sistem Kelulusan Siswa</h1>
+            <p>SDN 3 Kuala Pembuang I</p>
+        </div>
+
+        <div class="form-group">
+            <label>Tipe Login</label>
+            <select id="loginType" onchange="updateLoginHint()">
+                <option value="siswa">Siswa</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label id="usernameLabel">NISN (Nomor Induk Siswa Nasional)</label>
+            <input type="text" id="username" placeholder="Masukkan NISN atau username" maxlength="20">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Masukkan password" onkeypress="if(event.key==='Enter') handleLogin()">
+        </div>
+
+        <button class="btn btn-primary" onclick="handleLogin()">Masuk</button>
+
+        <div class="login-hint" id="loginHint">
+            Siswa: Gunakan NISN Anda | Password: 1234<br>
+            Admin: username: admin | password: admin123
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+    <div class="admin-header">
+        <h1>📊 Admin Panel - SDN 3 Kuala Pembuang I</h1>
+        <button class="btn-logout" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <div class="admin-content">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('data')">📋 Kelola Data Siswa</button>
+            <button class="tab-btn" onclick="switchTab('skl')">📄 Upload SKL</button>
+            <button class="tab-btn" onclick="switchTab('verifikasi')">✅ Verifikasi Data</button>
+        </div>
+
+        <!-- TAB: Data Siswa -->
+        <div id="tab-data" class="tab-content active">
+            <h2>Kelola Data Siswa</h2>
+
+            <div class="form-grid">
+                <div>
+                    <label>NISN</label>
+                    <input type="text" id="nisnInput" placeholder="10 digit" maxlength="10">
+                </div>
+                <div>
+                    <label>Nama Siswa</label>
+                    <input type="text" id="namaInput" placeholder="Nama lengkap">
+                </div>
+                <div>
+                    <label>Tempat Lahir</label>
+                    <input type="text" id="tempatInput" placeholder="Tempat lahir">
+                </div>
+                <div>
+                    <label>Tanggal Lahir</label>
+                    <input type="date" id="tglInput">
+                </div>
+                <div>
+                    <label>Orang Tua/Wali</label>
+                    <input type="text" id="orangtuaInput" placeholder="Nama orang tua">
+                </div>
+                <div>
+                    <label>Status</label>
+                    <select id="statusInput">
+                        <option value="lulus">✓ Lulus</option>
+                        <option value="belum">⏳ Belum Lulus</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-add" onclick="addSiswa()">➕ Tambah Siswa</button>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">Daftar Siswa Terdaftar</h3>
+            <div id="siswaList" class="scroll-container">
+                <p style="color: #999; text-align: center; padding: 20px;">Belum ada data siswa</p>
+            </div>
+        </div>
+
+        <!-- TAB: Upload SKL -->
+        <div id="tab-skl" class="tab-content">
+            <h2>Upload Surat Keterangan Lulus (SKL)</h2>
+
+            <div class="form-group">
+                <label>Pilih Siswa</label>
+                <select id="siswaPilihan">
+                    <option value="">-- Pilih Siswa --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Pilih File SKL (PDF)</label>
+                <input type="file" id="sklFile" accept=".pdf" placeholder="Pilih file PDF">
+            </div>
+
+            <button class="btn-add" onclick="uploadSKL()">📤 Upload SKL</button>
+
+            <div id="sklStatus" class="status-message">
+                <span id="sklStatusText">✓ SKL berhasil diupload!</span>
+            </div>
+        </div>
+
+        <!-- TAB: Verifikasi -->
+        <div id="tab-verifikasi" class="tab-content">
+            <h2>Verifikasi Kelulusan Siswa</h2>
+            <p style="color: #666; font-size: 14px;">Daftar siswa yang sudah memiliki SKL yang diupload:</p>
+
+            <div id="verifikasiList" class="scroll-container">
+                <p style="color: #999; text-align: center; padding: 20px;">Belum ada SKL yang diupload</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SISWA PORTAL -->
+<div id="siswaPortal">
+    <div class="portal-container">
+        <div id="hasilLulus" style="display: none;">
+            <div class="portal-header">
+                <span class="portal-emoji">🎉</span>
+                <h1>SELAMAT!</h1>
+                <p style="color: #666; font-size: 16px;">Anda Dinyatakan <span style="color: var(--color-success); font-weight: 600;">LULUS</span></p>
+            </div>
+
+            <div class="portal-info">
+                <div style="margin-bottom: 15px;">
+                    <p class="label">Nama:</p>
+                    <p class="value" id="displayNamaSiswa"></p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <p class="label">NISN:</p>
+                    <p class="value" id="displayNisnSiswa"></p>
+                </div>
+                <div>
+                    <p class="label">Tahun Lulus:</p>
+                    <p class="value">2024</p>
+                </div>
+            </div>
+
+            <button id="downloadBtn" class="btn-download" onclick="downloadSKLSiswa()">📥 Download Surat Keterangan Lulus (SKL)</button>
+            <button class="btn-logout" onclick="logout()" style="width: 100%;">← Logout</button>
+        </div>
+
+        <div id="hasilBelum" style="display: none;">
+            <div class="belum-lulus">
+                <span style="font-size: 80px; display: block; margin-bottom: 20px;">⏳</span>
+                <h1>Belum Ada Data</h1>
+                <p>Data kelulusan Anda belum tersedia di sistem. Silakan hubungi sekolah untuk informasi lebih lanjut.</p>
+                <div style="margin-top: 30px;">
+                    <button class="btn-logout" onclick="logout()" style="width: 100%;">← Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let database = {
+        siswa: [
+            {
+                nisn: '1234567890',
+                nama: 'Ahmad Ridho Pratama',
+                tempat: 'Kuala Pembuang',
+                tgl: '2012-03-15',
+                orangtua: 'Budi Santoso',
+                status: 'lulus',
+                skl: null
+            },
+            {
+                nisn: '1234567891',
+                nama: 'Siti Nurhaliza',
+                tempat: 'Kuala Pembuang',
+                tgl: '2012-05-20',
+                orangtua: 'Ahmad Wijaya',
+                status: 'lulus',
+                skl: null
+            },
+            {
+                nisn: '1234567892',
+                nama: 'Budi Santoso',
+                tempat: 'Kuala Pembuang',
+                tgl: '2012-07-10',
+                orangtua: 'Sugeng Riyanto',
+                status: 'belum',
+                skl: null
+            }
+        ]
+    };
+
+    let currentUser = null;
+
+    function updateLoginHint() {
+        const type = document.getElementById('loginType').value;
+        const label = document.getElementById('usernameLabel');
+        if (type === 'admin') {
+            label.textContent = 'Username';
+        } else {
+            label.textContent = 'NISN (Nomor Induk Siswa Nasional)';
+        }
+    }
+
+    function handleLogin() {
+        const loginType = document.getElementById('loginType').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            alert('Username dan password harus diisi!');
+            return;
+        }
+
+        if (loginType === 'admin') {
+            if (username === 'admin' && password === 'admin') {
+                currentUser = { role: 'admin' };
+                showAdminPanel();
+            } else {
+                alert('Username atau password admin salah!');
+            }
+        } else {
+            const siswa = database.siswa.find(s => s.nisn === username);
+            if (siswa && password === '1234') {
+                currentUser = { role: 'siswa', nisn: username, data: siswa };
+                showSiswaPortal();
+            } else {
+                alert('NISN atau password salah!\n\nDefault password: 1234');
+            }
+        }
+
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    }
+
+    function showAdminPanel() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        updateSiswaList();
+        updateSiswaPilihan();
+        updateVerifikasi();
+    }
+
+    function showSiswaPortal() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('siswaPortal').style.display = 'block';
+
+        if (currentUser.data.status === 'lulus') {
+            document.getElementById('hasilLulus').style.display = 'block';
+            document.getElementById('hasilBelum').style.display = 'none';
+            document.getElementById('displayNamaSiswa').textContent = currentUser.data.nama;
+            document.getElementById('displayNisnSiswa').textContent = currentUser.data.nisn;
+
+            if (!currentUser.data.skl) {
+                document.getElementById('downloadBtn').disabled = true;
+                document.getElementById('downloadBtn').textContent = '⏳ SKL Belum Tersedia';
+            }
+        } else {
+            document.getElementById('hasilBelum').style.display = 'block';
+            document.getElementById('hasilLulus').style.display = 'none';
+        }
+    }
+
+    function addSiswa() {
+        const nisn = document.getElementById('nisnInput').value;
+        const nama = document.getElementById('namaInput').value;
+        const tempat = document.getElementById('tempatInput').value;
+        const tgl = document.getElementById('tglInput').value;
+        const orangtua = document.getElementById('orangtuaInput').value;
+        const status = document.getElementById('statusInput').value;
+
+        if (!nisn || !nama) {
+            alert('NISN dan Nama harus diisi!');
+            return;
+        }
+
+        if (nisn.length !== 10) {
+            alert('NISN harus 10 digit!');
+            return;
+        }
+
+        const existing = database.siswa.find(s => s.nisn === nisn);
+        if (existing) {
+            alert('NISN sudah terdaftar!');
+            return;
+        }
+
+        database.siswa.push({
+            nisn,
+            nama,
+            tempat,
+            tgl,
+            orangtua,
+            status,
+            skl: null
+        });
+
+        document.getElementById('nisnInput').value = '';
+        document.getElementById('namaInput').value = '';
+        document.getElementById('tempatInput').value = '';
+        document.getElementById('tglInput').value = '';
+        document.getElementById('orangtuaInput').value = '';
+        document.getElementById('statusInput').value = 'lulus';
+
+        updateSiswaList();
+        updateSiswaPilihan();
+        updateVerifikasi();
+        alert('Siswa berhasil ditambahkan!');
+    }
+
+    function updateSiswaList() {
+        const list = document.getElementById('siswaList');
+        if (database.siswa.length === 0) {
+            list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Belum ada data siswa</p>';
+            return;
+        }
+
+        list.innerHTML = database.siswa.map((s, i) => `
+            <div class="siswa-item">
+                <div class="siswa-info">
+                    <p class="name">${s.nama}</p>
+                    <p class="nisn">NISN: ${s.nisn}</p>
+                </div>
+                <span class="status-badge ${s.status === 'lulus' ? 'status-lulus' : 'status-belum'}">
+                    ${s.status === 'lulus' ? '✓ Lulus' : '⏳ Belum'}
+                </span>
+                <button class="btn-delete" onclick="deleteSiswa(${i})">Hapus</button>
+            </div>
+        `).join('');
+    }
+
+    function deleteSiswa(index) {
+        if (confirm('Yakin ingin menghapus siswa ini?')) {
+            database.siswa.splice(index, 1);
+            updateSiswaList();
+            updateSiswaPilihan();
+            updateVerifikasi();
+        }
+    }
+
+    function updateSiswaPilihan() {
+        const select = document.getElementById('siswaPilihan');
+        select.innerHTML = '<option value="">-- Pilih Siswa --</option>' +
+            database.siswa.map(s => `<option value="${s.nisn}">${s.nama} (${s.nisn})</option>`).join('');
+    }
+
+    function uploadSKL() {
+        const nisn = document.getElementById('siswaPilihan').value;
+        const file = document.getElementById('sklFile').files[0];
+
+        if (!nisn || !file) {
+            alert('Pilih siswa dan file SKL terlebih dahulu!');
+            return;
+        }
+
+        if (!file.type.includes('pdf')) {
+            alert('File harus berupa PDF!');
+            return;
+        }
+
+        const siswa = database.siswa.find(s => s.nisn === nisn);
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            siswa.skl = {
+                name: file.name,
+                data: e.target.result
+            };
+
+            document.getElementById('siswaPilihan').value = '';
+            document.getElementById('sklFile').value = '';
+
+            const status = document.getElementById('sklStatus');
+            status.style.display = 'block';
+            document.getElementById('sklStatusText').textContent = `✓ SKL untuk ${siswa.nama} berhasil diupload!`;
+            setTimeout(() => status.style.display = 'none', 3000);
+
+            updateVerifikasi();
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function updateVerifikasi() {
+        const list = document.getElementById('verifikasiList');
+        const sklUploaded = database.siswa.filter(s => s.skl);
+
+        if (sklUploaded.length === 0) {
+            list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Belum ada SKL yang diupload</p>';
+            return;
+        }
+
+        list.innerHTML = sklUploaded.map(s => `
+            <div class="siswa-item">
+                <div class="siswa-info">
+                    <p class="name">✓ ${s.nama}</p>
+                    <p class="nisn">NISN: ${s.nisn}</p>
+                    <p class="nisn">File: ${s.skl.name}</p>
+                </div>
+                <button class="btn-delete" onclick="viewSKL('${s.nisn}')" style="background: var(--color-info); margin-left: 10px;">👁️ Preview</button>
+            </div>
+        `).join('');
+    }
+
+    function viewSKL(nisn) {
+        const siswa = database.siswa.find(s => s.nisn === nisn);
+        if (siswa && siswa.skl) {
+            const link = document.createElement('a');
+            link.href = siswa.skl.data;
+            link.target = '_blank';
+            link.click();
+        }
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function downloadSKLSiswa() {
+        const data = currentUser.data;
+        if (!data.skl) {
+            alert('SKL belum tersedia');
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.href = data.skl.data;
+        link.download = `SKL_${data.nama.replace(/\s+/g, '_')}.pdf`;
+        link.click();
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('siswaPortal').style.display = 'none';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('loginType').value = 'siswa';
+        updateLoginHint();
+    }
+
+    // Inisialisasi
+    updateLoginHint();
+</script>
+
+</body>
+</html>
